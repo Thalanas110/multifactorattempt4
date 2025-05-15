@@ -1,0 +1,119 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verify Email</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+      text-align: center;
+    }
+    .container {
+      background: #fff;
+      padding: 30px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    select, input[type="email"], input[type="text"] {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #otpInput {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Multi-Factor Authentication</h2>
+    <p>Please select a way to verify your email.</p>
+    <form id="form">
+      <input type="email" name="user_email" id="userEmail" placeholder="Enter your email" required />
+
+      <select id="authMethod">
+        <option value="otp">Email OTP</option>
+        <option value="push">Email Push Button</option>
+      </select>
+
+      <!-- Hidden input for OTP and confirm_url to match template fields -->
+      <input type="hidden" name="otp" id="hiddenOtpField" />
+      <input type="hidden" name="confirm_url" id="hiddenUrlField" />
+
+      <!-- Removed redundant hidden input for user_email -->
+      <!-- <input type="hidden" name="user_email" id="userEmailHidden" /> -->
+
+      <input type="submit" id="button" value="Send Email" />
+    </form>
+
+    <div id="otpInput">
+      <input type="text" id="otpField" placeholder="Enter OTP" />
+      <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+
+    <p id="status"></p>
+  </div>
+
+
+<script>
+  document.getElementById('form').addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    const btn = document.getElementById('button');
+    const method = document.getElementById("authMethod").value;
+    const email = document.getElementById("userEmail").value;
+
+    btn.value = 'Sending...';
+
+    const response = await fetch('http://localhost:3000/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, method })
+    });
+
+    const result = await response.json();
+    document.getElementById("status").innerText = result.message;
+
+    if (method === "otp") {
+      document.getElementById("otpInput").style.display = "block";
+    }
+
+    btn.value = 'Send Email';
+  });
+
+  async function verifyOTP() {
+    const email = document.getElementById("userEmail").value;
+    const otp = document.getElementById("otpField").value;
+
+    const response = await fetch('http://localhost:3000/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, otp })
+    });
+
+    if (response.ok) {
+      window.location.href = "homepage";
+    } else {
+      const msg = await response.text();
+      alert("Verification failed: " + msg);
+    }
+  }
+</script>
+
+  
+</body>
+</html>
