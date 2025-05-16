@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
@@ -14,7 +13,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve public folder
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
 
 // API route for sending email
 app.post('/send-email', async (req, res) => {
@@ -49,7 +48,10 @@ app.post('/send-email', async (req, res) => {
   }
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+// Explicit root route to serve index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Start the server
 app.listen(PORT, () => {
