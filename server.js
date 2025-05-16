@@ -13,7 +13,23 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, 'public'))); // Serve static files
+app.use(express.static(path.join(__dirname, 'public'))); // static files amalgammation
+
+// otp generator
+function generateOTP() {
+  const digits = '0123456789';
+  let otp = '';
+  try {
+    for (let i = 0; i < 6; i++) {
+      otp += digits[Math.floor(Math.random() * 10)];
+    }
+  } 
+  catch (error) {
+    console.error('Error generating OTP:', error);
+    otp = Math.floor(100000 + Math.random() * 900000).toString();
+  }
+  return otp;
+}
 
 // API route for sending email
 app.post('/send-email', async (req, res) => {
@@ -42,7 +58,8 @@ app.post('/send-email', async (req, res) => {
       }
     );
     res.status(200).json({ message: 'Email sent successfully', result });
-  } catch (error) {
+  } 
+  catch (error) {
     console.error('Email sending failed:', error);
     res.status(500).json({ message: 'Email sending failed', error });
   }
