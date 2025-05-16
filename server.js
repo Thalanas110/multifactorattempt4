@@ -28,8 +28,8 @@ app.post('/send-email', async (req, res) => {
   };
 
   const templateID = method === 'otp'
-    ? process.env.EMAILJS_TEMPLATE_OTP
-    : process.env.EMAILJS_TEMPLATE_PUSH;
+    ? process.env.EMAILJS_TEMPLATE_ID_OTP
+    : process.env.EMAILJS_TEMPLATE_ID_PUSH;
 
   try {
     const result = await emailjs.send(
